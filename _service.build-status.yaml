@@ -1,0 +1,3 @@
+ServiceName: 'build-status'
+InterfaceName: 'items'
+Description: 'build-status'
