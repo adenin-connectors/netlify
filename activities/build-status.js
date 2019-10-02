@@ -17,7 +17,7 @@ module.exports = async (activity) => {
     const items = response.body.Data.items;
 
     logger.error('context is' + JSON.stringify(activity.Context));
-    logger.error('response is' + JSON.stringify(response));
+    logger.error('response is' + JSON.stringify(response.body));
 
     let failCount = 0;
 
