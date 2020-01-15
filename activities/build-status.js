@@ -22,7 +22,7 @@ module.exports = async (activity) => {
       if (items[i].description !== 'building' && items[i].description !== 'ready') failCount++;
     }
 
-    activity.Response.Data.items = response.body.Data.items;
+    activity.Response.Data.items = response.body.Data.items.sort($.compare.dateDescending);
 
     if (parseInt(pagination.page) === 1) {
       activity.Response.Data.title = T(activity, 'Build Status');
@@ -32,7 +32,7 @@ module.exports = async (activity) => {
 
       if (failCount > 0) {
         activity.Response.Data.value = failCount;
-        activity.Response.Data.date = response.body.Data.items[0].date;
+        activity.Response.Data.date = activity.Response.Data.items[0].date;
         activity.Response.Data.color = 'blue';
         activity.Response.Data.description = failCount > 1 ? T(activity, '{0} builds are currently failing.', failCount) : T(activity, '1 build is currently failing.');
       } else {
