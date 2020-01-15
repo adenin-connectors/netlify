@@ -16,10 +16,14 @@ module.exports = async (activity) => {
 
     const items = response.body.Data.items;
 
+    const buildsFailing = [];
     let failCount = 0;
 
     for (let i = 0; i < items.length; i++) {
-      if (items[i].description !== 'building' && items[i].description !== 'ready') failCount++;
+      if (items[i].description !== 'building' && items[i].description !== 'ready') {
+        buildsFailing.push(items[i]);
+        failCount++;
+      }
     }
 
     activity.Response.Data.items = response.body.Data.items.sort($.compare.dateDescending);
@@ -33,8 +37,19 @@ module.exports = async (activity) => {
       if (failCount > 0) {
         activity.Response.Data.value = failCount;
         activity.Response.Data.date = activity.Response.Data.items[0].date;
-        activity.Response.Data.color = 'blue';
+        activity.Response.Data.color = 'red';
         activity.Response.Data.description = failCount > 1 ? T(activity, '{0} builds are currently failing.', failCount) : T(activity, '1 build is currently failing.');
+
+        switch (buildsFailing.length) {
+        case 1:
+          activity.Response.Data.briefing = T(activity, `Build <b>${buildsFailing[0].title}</b> is currently failing.`);
+          break;
+        case 2:
+          activity.Response.Data.briefing = T(activity, `Builds <b>${buildsFailing[0].title}</b> and <b>${buildsFailing[1].title}</b> are currently failing.`);
+          break;
+        default:
+          activity.Response.Data.briefing = T(activity, `Build <b>${buildsFailing[0].title}</b> and <b>${buildsFailing.length - 1}</b> more are currently failing.`);
+        }
       } else {
         activity.Response.Data.description = T(activity, 'All builds are succeeding.');
       }
